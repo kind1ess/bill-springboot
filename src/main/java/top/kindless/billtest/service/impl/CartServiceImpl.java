@@ -1,6 +1,10 @@
 package top.kindless.billtest.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import top.kindless.billtest.exception.*;
 import top.kindless.billtest.model.common.ListGoods;
@@ -19,16 +23,13 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@CacheConfig(cacheNames = "cart")
 public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepository;
-
     private final InventoryService inventoryService;
-
     private final CommodityService commodityService;
-
     private final SpecificationService specificationService;
-
     private final FdInventoryService fdInventoryService;
 
     public CartServiceImpl(CartRepository cartRepository,
@@ -62,18 +63,18 @@ public class CartServiceImpl implements CartService {
         Integer amount = cartParams.getAmount();
         waitToAdd.setGoodsId(goodsId);
         waitToAdd.setAmount(amount);
-        String message = "购物车该商品数量超过限制";
+        String message = "购物车里该商品数量超过限制";
         if (amount >10){
             throw new AmountOutOfBoundException(message);
         }
         Cart cart = cartRepository.findByUserIdAndGoodsId(userId, goodsId);
         if (cart==null)
-            cartRepository.save(waitToAdd);
+            saveCart(waitToAdd);
         else if (cart.getAmount()+waitToAdd.getAmount()>10){
             throw new AmountOutOfBoundException(message);
         }else {
             cart.setAmount(cart.getAmount()+waitToAdd.getAmount());
-            cartRepository.save(cart);
+            updateCart(cart);
         }
     }
 
@@ -92,35 +93,17 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartVo findAllCartByIds(List<Integer> ids) {
-        Authentication authentication = AuthContextHolder.getAuthContext().getAuthentication();
-        if (authentication == null){
-            //如果为空则未登录
-            throw new UnAuthorizedException("未授权请先登录");
-        }
-        String userId = authentication.getUser().getId();
         List<Cart> carts = new ArrayList<>();
-        Cart cart = null;
+        Cart cart;
         for (Integer id : ids) {
-            Optional<Cart> cartOptional = cartRepository.findById(id);
-            if (cartOptional.isPresent()){
-                cart = cartOptional.get();
-                if (!userId.equals(cart.getUserId())){
-                    throw new BadRequestException("创建订单失败，请不要拿别人购物车里的东西").setErrorData(convertCartToCartDto(cart));
-                }
-            }
-            if (cart == null){
-                throw new InternalServerErrorException("服务器错误,不存在id为"+id+"的购物车").setErrorData(id);
-            }
-            if (cart.getAmount()>fdInventoryService.findAmountById(cart.getGoodsId())){
-                throw new InventoryShortageException("库存不足，不能提交订单").setErrorData(convertCartToCartDto(cart));
-            }else {
-                carts.add(cart);
-            }
+            cart = findCartById(id);
+            carts.add(cart);
         }
         return convertCartListToCartVo(carts);
     }
 
     @Override
+    @Cacheable(keyGenerator = "myKeyGenerator")
     public String findUserIdById(Integer id) {
         return cartRepository.findUserIdById(id);
     }
@@ -136,10 +119,87 @@ public class CartServiceImpl implements CartService {
         return goodsList;
     }
 
+    @Override
+    @CacheEvict(key = "#cartId")
+    public void deleteCartById(Integer cartId) {
+        Authentication authentication = AuthContextHolder.getAuthContext().getAuthentication();
+        if (authentication == null){
+            throw new UnAuthorizedException("未授权请先登录");
+        }
+        if (!authentication.getUser().getId().equals(findUserIdById(cartId))){
+            throw new ForbiddenException("禁止删除其他用户的购物车");
+        }
+        if (isExist(cartId))
+            cartRepository.deleteById(cartId);
+    }
+
+    @Override
+    public void deleteCartsByIds(List<Integer> ids) {
+        for (Integer id : ids) {
+            deleteCartById(id);
+        }
+    }
+
+    @Override
+    @Cacheable(key = "#id")
+    public Cart findCartById(Integer id) {
+        Authentication authentication = AuthContextHolder.getAuthContext().getAuthentication();
+        if (authentication == null){
+            //如果为空则未登录
+            throw new UnAuthorizedException("未授权请先登录");
+        }
+        String userId = authentication.getUser().getId();
+        Optional<Cart> cartOptional = cartRepository.findById(id);
+        Cart cart;
+        if (cartOptional.isPresent()){
+            cart = cartOptional.get();
+            if (!userId.equals(cart.getUserId())){
+                throw new ForbiddenException("禁止访问其他用户的购物车").setErrorData(cart.getId());
+            }
+        }else {
+            throw new BadRequestException("不存在id为"+id+"的购物车").setErrorData(id);
+        }
+        if (cart.getAmount()>fdInventoryService.findAmountById(cart.getGoodsId())){
+            throw new InventoryShortageException("库存不足，购物车无法提交").setErrorData(convertCartToCartDto(cart));
+        }
+        return cart;
+    }
+
+    @Override
+    @CachePut(key = "#cart.id")
+    public Cart updateCart(Cart cart) {
+        cartRepository.saveAndFlush(cart);
+        return cart;
+    }
+
+    @Override
+    public void saveCart(Cart cart) {
+        cartRepository.save(cart);
+    }
+
+    @Override
+    public void deleteCartBySelect(CartVo cartVo) {
+        List<CartDto> cartDtoList = cartVo.getCartDtoList();
+        List<Integer> ids = new ArrayList<>();
+        for (CartDto cartDto : cartDtoList) {
+            Integer cartId = cartDto.getCartId();
+            ids.add(cartId);
+        }
+        deleteCartsByIds(ids);
+    }
+
+    /**
+     * 根据id判断该购物车是否存在
+     * @param cartId 购物车id
+     * @return 如果存在则返回true
+     */
+    private boolean isExist(Integer cartId){
+        return findCartById(cartId)!=null;
+    }
     /**
      * 将List<cart>转换为CartVo
-     * @param carts
-     * @return
+     * @param carts 购物车信息集合
+     * @return CartVo
      */
     private CartVo convertCartListToCartVo(List<Cart> carts){
         List<CartDto> cartDtoList = new ArrayList<>();
@@ -153,8 +213,8 @@ public class CartServiceImpl implements CartService {
 
     /**
      * 将Cart转换为CartDto
-     * @param cart
-     * @return
+     * @param cart 购物车信息
+     * @return CartDto
      */
     private CartDto convertCartToCartDto(Cart cart){
         Inventory inventory = inventoryService.findById(cart.getGoodsId());
@@ -163,22 +223,24 @@ public class CartServiceImpl implements CartService {
         Float price = commodity.getPrice();
         Integer amount = cart.getAmount();
         Float sumPrice = price*amount;
-        return new CartDto(
-                cart.getId(),
-                inventory.getGoodsId() ,
-                commodity.getId(),
-                specification.getId(),
-                commodity.getCommodityName(),
-                specification.getSpecificationName(),
-                price,
-                amount,
-                sumPrice);
+        CartDto cartDto = new CartDto();
+        cartDto.setCartId(cart.getId());
+        cartDto.setAmount(amount);
+        cartDto.setSumPrice(sumPrice);
+        cartDto.setCommodityId(commodity.getId());
+        cartDto.setCommodityName(commodity.getCommodityName());
+        cartDto.setGoodsId(inventory.getGoodsId());
+        cartDto.setPrice(price);
+        cartDto.setSpecificationId(specification.getId());
+        cartDto.setSpecificationName(specification.getSpecificationName());
+        cartDto.setImgUrl(commodity.getImgUrl());
+        return cartDto;
     }
 
     /**
      * 将CartDto转换为ListGoods
-     * @param cartDto
-     * @return
+     * @param cartDto CartDto
+     * @return 单据展示的商品信息
      */
     private ListGoods convertCartDtoToListGoods(CartDto cartDto){
         Integer goodsId = cartDto.getGoodsId();

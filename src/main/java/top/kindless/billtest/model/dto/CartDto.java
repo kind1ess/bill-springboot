@@ -3,33 +3,18 @@ package top.kindless.billtest.model.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import top.kindless.billtest.model.common.CommonGoodsInfo;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartDto {
+public class CartDto extends CommonGoodsInfo {
 
     @ApiModelProperty("购物车id")
     private Integer cartId;
-
-    @ApiModelProperty("货物id")
-    private Integer goodsId;
-
-    @ApiModelProperty("商品id")
-    private Integer commodityId;
-
-    @ApiModelProperty("规格id")
-    private Integer specificationId;
-
-    @ApiModelProperty("商品名称")
-    private String commodityName;
-
-    @ApiModelProperty("规格名称")
-    private String specificationName;
-
-    @ApiModelProperty("商品单价")
-    private Float price;
 
     @ApiModelProperty("数量")
     private Integer amount;

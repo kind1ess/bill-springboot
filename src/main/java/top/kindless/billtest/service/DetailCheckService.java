@@ -1,0 +1,46 @@
+package top.kindless.billtest.service;
+
+import org.springframework.lang.NonNull;
+import org.springframework.transaction.annotation.Transactional;
+import top.kindless.billtest.model.entity.DetailCheck;
+
+import java.util.List;
+
+public interface DetailCheckService {
+
+    /**
+     * 保存每一栏验收单明细
+     * @param detailCheck
+     */
+    @Transactional
+    void saveDetailCheck(@NonNull DetailCheck detailCheck);
+
+    /**
+     * 保存验收单明细集合，通常是用来保存一张验收单的所有明细
+     * @param detailCheckList
+     */
+    void saveDetailCheckList(@NonNull List<DetailCheck> detailCheckList);
+
+    /**
+     * 更新验收单明细
+     * @param detailCheck
+     * @return
+     */
+    @NonNull
+    @Transactional
+    DetailCheck updateDetailCheck(@NonNull DetailCheck detailCheck);
+
+    /**
+     * 根据id删除验收单明细
+     * @param id
+     */
+    @Transactional
+    void deleteDetailCheckById(@NonNull Integer id);
+
+    /**
+     * 根据id查询验收单明细
+     * @param id
+     * @return
+     */
+    DetailCheck findDetailCheckById(@NonNull Integer id);
+}

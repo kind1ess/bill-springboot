@@ -16,4 +16,8 @@ public class DetailInvoice  {
     private Integer id;
 
     private String billId;
+
+    private Integer goodsId;
+
+    private Integer amount;
 }

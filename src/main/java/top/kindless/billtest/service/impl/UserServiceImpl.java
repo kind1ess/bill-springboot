@@ -1,16 +1,19 @@
 package top.kindless.billtest.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import top.kindless.billtest.config.properties.KindlessProperties;
-import top.kindless.billtest.exception.AccountAlreadyExistException;
-import top.kindless.billtest.exception.BadRequestException;
-import top.kindless.billtest.exception.LoginParamsErrorException;
-import top.kindless.billtest.exception.UnAuthorizedException;
+import top.kindless.billtest.exception.*;
 import top.kindless.billtest.model.entity.User;
 import top.kindless.billtest.model.params.LoginParams;
+import top.kindless.billtest.model.vo.UserVo;
 import top.kindless.billtest.repository.UserRepository;
 import top.kindless.billtest.security.auth.Authentication;
+import top.kindless.billtest.security.context.AuthContext;
 import top.kindless.billtest.security.context.AuthContextHolder;
 import top.kindless.billtest.security.token.AuthToken;
 import top.kindless.billtest.service.UserService;
@@ -20,6 +23,8 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
+@CacheConfig(cacheNames = "user")
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -42,7 +47,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public AuthToken login(LoginParams loginParams) {
 //        String password = userRepository.findPasswordByAccount(loginParams.getAccount());
+        log.info(loginParams.getAccount()+"尝试登录");
         User user = userRepository.findByAccount(loginParams.getAccount());
+        if (user == null){
+            throw new LoginParamsErrorException("用户名或密码错误");
+        }
         if (!user.getPassword().equals(loginParams.getPassword())){
             throw new LoginParamsErrorException("用户名或密码错误");
         }
@@ -51,28 +60,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void logout() {
+        String message = "未登录，不能注销";
         Authentication authentication = AuthContextHolder.getAuthContext().getAuthentication();
         if (authentication == null){
-            throw new UnAuthorizedException("未登录，不能注销");
+            throw new UnAuthorizedException(message);
         }
         String token = authentication.getToken();
         if (token == null){
-            throw new UnAuthorizedException("未登录，不能注销");
+            throw new UnAuthorizedException(message);
         }
         redisTemplate.delete(token);
+        log.info(authentication.getUser().getAccount()+"退出登录");
     }
 
     @Override
     public void signUp(User user) {
-        if (userRepository.findByAccount(user.getAccount())!=null){
+        if (isExist(user.getAccount())){
             throw new AccountAlreadyExistException("账号不可用，该用户已存在！");
         }
         else {
             userRepository.save(user);
+            log.info(user.getAccount()+"注册成功");
         }
     }
 
     @Override
+    @Cacheable(key = "#id")
     public User findUserById(String id) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (!optionalUser.isPresent()){
@@ -81,19 +94,64 @@ public class UserServiceImpl implements UserService {
         return optionalUser.get();
     }
 
+    @Override
+    public UserVo getUserProfile() {
+        Authentication authentication = AuthContextHolder.getAuthContext().getAuthentication();
+        if (authentication == null){
+            throw new UnAuthorizedException("请先登录");
+        }
+        User user = authentication.getUser();
+        return new UserVo(
+                user.getId(),
+                user.getAccount(),
+                user.getPassword(),
+                user.getTelephone(),
+                user.getAddress()
+        );
+    }
+
+    @Override
+    @CachePut(key = "#user.id")
+    public User updateUser(User user) {
+        log.info(user.toString());
+        Authentication authentication = AuthContextHolder.getAuthContext().getAuthentication();
+        if (authentication == null){
+            throw new UnAuthorizedException("未授权请先登录");
+        }
+        User authenticationUser = authentication.getUser();
+        if (!authenticationUser.getId().equals(user.getId())){
+            throw new ForbiddenException("禁止修改其他用户的数据");
+        }
+        user.setCreditScore(authenticationUser.getCreditScore());
+        String token = authentication.getToken();
+        redisTemplate.opsForValue().set(token,user,kindlessProperties.getTokenExpiredIn(),TimeUnit.SECONDS);
+        return userRepository.save(user);
+    }
+
     private AuthToken buildToken(User user){
         //生成token
         String token = UUIDUtils.generateToken();
-        Long timeOut = kindlessProperties.getTokenExpiredIn();
+        Long timeout = kindlessProperties.getTokenExpiredIn();
         //将token缓存起来,并设置缓存时间
-        redisTemplate.opsForValue().set(token,user,timeOut,TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(token,user,timeout,TimeUnit.SECONDS);
         AuthToken authToken = new AuthToken();
         authToken.setUserId(user.getId());
         authToken.setToken(token);
-        System.out.println(timeOut);
-        authToken.setExpiredIn(timeOut);
+        System.out.println(timeout);
+        authToken.setExpiredIn(timeout);
         //缓存，设置缓存时间
 //        redisTemplate.opsForValue().set(userId,token,kindlessProperties.getTokenExpiredIn(), TimeUnit.SECONDS);
         return authToken;
+    }
+
+    /**
+     * 通过用户id判断是否存在
+     * @param findAble 可以是用户id也可以是账号
+     * @return 如果查询出来都不为空则返回true
+     */
+    private boolean isExist(String findAble){
+        Optional<User> userOptional = userRepository.findById(findAble);
+        User user = userRepository.findByAccount(findAble);
+        return userOptional.isPresent()||user!=null;
     }
 }

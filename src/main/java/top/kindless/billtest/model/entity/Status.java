@@ -31,4 +31,6 @@ public class Status {
     private Integer id;
 
     private String statusName;
+
+//    private String attribute;
 }

@@ -18,4 +18,8 @@ public class DetailOdo {
     private String billId;
 
     private String orderId;
+
+    private Integer goodsId;
+
+    private Integer amount;
 }

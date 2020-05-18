@@ -30,7 +30,7 @@ import java.util.Set;
 
 @Component
 @Slf4j
-public class AuthenticateFilter extends OncePerRequestFilter {
+public class    AuthenticateFilter extends OncePerRequestFilter {
 
     protected final AntPathMatcher antPathMatcher;
     private final UrlPathHelper urlPathHelper = new UrlPathHelper();
@@ -47,7 +47,8 @@ public class AuthenticateFilter extends OncePerRequestFilter {
         addUrlPatterns("/api/**");
         addExcludeUrlPatterns(
                 "/api/user/signUp",
-                "/api/user/login"
+                "/api/user/login",
+                "/api/goods/findAll"
         );
     }
     @Override
@@ -65,7 +66,7 @@ public class AuthenticateFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         Assert.notNull(request, "请求不能为空");
 
-        // check white list
+        // 验证是否在过滤白名单
         boolean result = excludeUrlPatterns.stream().anyMatch(p -> antPathMatcher.match(p, urlPathHelper.getRequestUri(request)));
 
         return result || urlPatterns.stream().noneMatch(p -> antPathMatcher.match(p, urlPathHelper.getRequestUri(request)));
@@ -77,7 +78,7 @@ public class AuthenticateFilter extends OncePerRequestFilter {
     }
 
     private void addExcludeUrlPatterns(@NonNull String... excludeUrlPatterns){
-        Assert.notNull(excludeUrlPatterns,"排除的url模式不能为空");
+        Assert.notNull(excludeUrlPatterns,"url白名单不能为空");
         Collections.addAll(this.excludeUrlPatterns,excludeUrlPatterns);
     }
 

@@ -42,7 +42,7 @@ public class ControllerGlobalExceptionHandler {
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
     public Result handleInternalServerErrorException(InternalServerErrorException e){
         log.error(e.getMessage(),e);
-        return Result.internalError("服务器发生错误",e.getErrorData());
+        return Result.internalError(e.getMessage(),e.getErrorData());
     }
 
     @ExceptionHandler(UnAuthorizedException.class)

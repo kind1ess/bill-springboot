@@ -16,4 +16,6 @@ public class Commodity {
     private String commodityName;
 
     private Float price;
+
+    private String imgUrl;
 }

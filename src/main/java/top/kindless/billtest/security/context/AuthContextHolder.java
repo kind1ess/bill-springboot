@@ -8,7 +8,7 @@ import org.springframework.lang.Nullable;
  */
 public class AuthContextHolder {
 
-    //用threadlocal维护当前验证用户
+    //用threadLocal维护当前验证用户
     private final static ThreadLocal<AuthContext> CONTEXT_HOLDER = new ThreadLocal<>();
 
     //不允许外部实例化对象
@@ -18,7 +18,7 @@ public class AuthContextHolder {
     /**
      * 获得验证信息上下文
      * 如果当前没有验证信息上下文则创建一个空的验证信息上下文
-     * @return
+     * @return authContext
      */
     @NonNull
     public static AuthContext getAuthContext(){
@@ -32,7 +32,7 @@ public class AuthContextHolder {
 
     /**
      * 设置验证信息上下文
-     * @param context
+     * @param context context
      */
     public static void setContext(@Nullable AuthContext context) {
         CONTEXT_HOLDER.set(context);
@@ -47,7 +47,7 @@ public class AuthContextHolder {
 
     /**
      * 创建一个空的验证信息上下文
-     * @return
+     * @return AuthContextImpl
      */
     @NonNull
     private static AuthContext createEmptyContext() {
