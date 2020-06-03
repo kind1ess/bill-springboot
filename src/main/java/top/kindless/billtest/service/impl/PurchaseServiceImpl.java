@@ -5,6 +5,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import top.kindless.billtest.exception.BadRequestException;
 import top.kindless.billtest.exception.InternalServerErrorException;
 import top.kindless.billtest.exception.UnAuthorizedException;
 import top.kindless.billtest.model.entity.BillPurchase;
@@ -14,6 +15,7 @@ import top.kindless.billtest.security.auth.Authentication;
 import top.kindless.billtest.security.context.AuthContextHolder;
 import top.kindless.billtest.service.DetailPurchaseService;
 import top.kindless.billtest.service.PurchaseService;
+import top.kindless.billtest.utils.StatusConst;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,10 +36,6 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     @Cacheable(key = "#id")
     public BillPurchase findBillById(String id) {
-        Authentication authentication = AuthContextHolder.getAuthContext().getAuthentication();
-        if (authentication == null) {
-            throw new UnAuthorizedException("未授权请先登录");
-        }
         Optional<BillPurchase> billPurchaseOptional = billPurchaseRepository.findById(id);
         if (!billPurchaseOptional.isPresent()){
             throw new InternalServerErrorException("采购单表头数据不存在或已被删除").setErrorData(id);
@@ -47,10 +45,6 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public List<BillPurchase> findBillsByStatusId(Integer statusId) {
-        Authentication authentication = AuthContextHolder.getAuthContext().getAuthentication();
-        if (authentication == null) {
-            throw new UnAuthorizedException("未授权请先登录");
-        }
         return billPurchaseRepository.findAllByStatusId(statusId);
     }
 
@@ -67,20 +61,12 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public void saveBillPurchase(BillPurchase billPurchase) {
-        Authentication authentication = AuthContextHolder.getAuthContext().getAuthentication();
-        if (authentication == null) {
-            throw new UnAuthorizedException("未授权请先登录");
-        }
         billPurchaseRepository.save(billPurchase);
     }
 
     @Override
     @CachePut(key = "#billPurchase.id")
     public BillPurchase updateBillPurchase(BillPurchase billPurchase) {
-        Authentication authentication = AuthContextHolder.getAuthContext().getAuthentication();
-        if (authentication == null) {
-            throw new UnAuthorizedException("未授权请先登录");
-        }
         billPurchaseRepository.saveAndFlush(billPurchase);
         return billPurchase;
     }
@@ -93,6 +79,26 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public List<BillPurchase> findAllBill() {
-        return null;
+        return billPurchaseRepository.findAll();
+    }
+
+    @Override
+    public List<String> findAllId() {
+        return billPurchaseRepository.findAllId();
+    }
+
+    @Override
+    public List<BillPurchase> findAll(List<String> ids) {
+        return billPurchaseRepository.findAll();
+    }
+
+    @Override
+    public void setBillStatus(String billId, Integer statusId) {
+        if (!(statusId.equals(StatusConst.TO_BE_CHECKED)||statusId.equals(StatusConst.CHECKED))){
+            throw new BadRequestException("设置状态错误");
+        }
+        BillPurchase billPurchase = findBillById(billId);
+        billPurchase.setStatusId(statusId);
+        saveBillPurchase(billPurchase);
     }
 }

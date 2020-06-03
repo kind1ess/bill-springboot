@@ -21,4 +21,35 @@ public class CartDto extends CommonGoodsInfo {
 
     @ApiModelProperty("商品总价")
     private Float sumPrice;
+
+    public CartDto(Integer goodsId,
+                   Integer commodityId,
+                   String commodityName,
+                   Integer specificationId,
+                   String specificationName,
+                   Float price,
+                   String imgUrl,
+                   Integer cartId,
+                   Integer amount,
+                   Float sumPrice){
+        super(goodsId, commodityId, commodityName, specificationId, specificationName, price, imgUrl);
+        this.cartId = cartId;
+        this.amount = amount;
+        this.sumPrice = sumPrice;
+    }
+
+    public CartDto(Integer goodsId,
+                   Integer commodityId,
+                   String commodityName,
+                   Integer specificationId,
+                   String specificationName,
+                   Float price,
+                   String imgUrl,
+                   Integer cartId,
+                   Integer amount){
+        super(goodsId, commodityId, commodityName, specificationId, specificationName, price, imgUrl);
+        this.cartId = cartId;
+        this.amount = amount;
+        this.sumPrice = price * amount;
+    }
 }

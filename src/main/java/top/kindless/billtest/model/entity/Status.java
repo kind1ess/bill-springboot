@@ -4,10 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * 单据状态
@@ -18,13 +16,14 @@ import javax.persistence.Id;
  * 5.已发货
  * 6.待验收
  * 7.待入库
- * 8.已验收
+ * 8.已入库
  */
-@Entity(name = "tb_status")
+@Entity
+@Table(name = "tb_status")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Status {
+public class Status implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

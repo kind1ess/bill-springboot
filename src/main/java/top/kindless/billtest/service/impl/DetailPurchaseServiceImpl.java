@@ -23,48 +23,37 @@ public class DetailPurchaseServiceImpl implements DetailPurchaseService {
 
     @Override
     public void saveDetailPurchase(DetailPurchase detailPurchase) {
-        Authentication authentication = AuthContextHolder.getAuthContext().getAuthentication();
-        if (authentication == null){
-            throw new UnAuthorizedException("未授权请先登录");
-        }
         detailPurchaseRepository.save(detailPurchase);
     }
 
     @Override
     public void saveDetailPurchaseList(List<DetailPurchase> detailPurchaseList) {
-        for (DetailPurchase detailPurchase : detailPurchaseList) {
-            saveDetailPurchase(detailPurchase);
-        }
+        detailPurchaseRepository.saveAll(detailPurchaseList);
     }
 
     @Override
     public DetailPurchase updateDetailPurchase(DetailPurchase detailPurchase) {
-        Authentication authentication = AuthContextHolder.getAuthContext().getAuthentication();
-        if (authentication == null){
-            throw new UnAuthorizedException("未授权请先登录");
-        }
         return detailPurchaseRepository.saveAndFlush(detailPurchase);
     }
 
     @Override
     public void deleteDetailPurchaseById(Integer id) {
-        Authentication authentication = AuthContextHolder.getAuthContext().getAuthentication();
-        if (authentication == null){
-            throw new UnAuthorizedException("未授权请先登录");
-        }
         detailPurchaseRepository.deleteById(id);
     }
 
     @Override
     public DetailPurchase findDetailPurchaseById(Integer id) {
-        Authentication authentication = AuthContextHolder.getAuthContext().getAuthentication();
-        if (authentication == null){
-            throw new UnAuthorizedException("未授权请先登录");
-        }
         Optional<DetailPurchase> detailPurchaseOptional = detailPurchaseRepository.findById(id);
         if (!detailPurchaseOptional.isPresent()){
             throw new InternalServerErrorException("采购单明细数据不存在或已被删除").setErrorData(id);
         }
         return detailPurchaseOptional.get();
     }
+
+    @Override
+    public List<DetailPurchase> findAllByBillId(String billId) {
+        return detailPurchaseRepository.findAllByBillId(billId);
+    }
+
+
 }

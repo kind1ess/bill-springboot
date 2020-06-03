@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import top.kindless.billtest.model.entity.User;
 import top.kindless.billtest.model.params.LoginParams;
 import top.kindless.billtest.model.vo.UserVo;
+import top.kindless.billtest.security.annotation.UserAuth;
 import top.kindless.billtest.security.token.AuthToken;
 import top.kindless.billtest.service.UserService;
 import top.kindless.billtest.utils.Result;
@@ -19,12 +20,10 @@ public class UserController {
     @Autowired
     UserService userService;
 
+
     @PostMapping("/signUp")
     @ApiOperation("用户注册")
     public Result<Object> signUp(@RequestBody User user){
-//        System.out.println(user);
-        user.setId(UUIDUtils.generateUserUUID());
-        user.setCreditScore(80);
         userService.signUp(user);
         return Result.ok(HttpStatus.OK.getReasonPhrase());
     }
@@ -37,6 +36,7 @@ public class UserController {
 
     @PostMapping("/logout")
     @ApiOperation("用户注销")
+    @UserAuth
     public Result<Object> logout(){
         userService.logout();
         return Result.ok(HttpStatus.OK.getReasonPhrase());
@@ -44,12 +44,14 @@ public class UserController {
 
     @GetMapping("/getUserProfile")
     @ApiOperation("获取用户信息")
+    @UserAuth
     public Result<UserVo> getUserProfile(){
         return Result.ok(HttpStatus.OK.getReasonPhrase(),userService.getUserProfile());
     }
 
     @PutMapping("/updateUser")
     @ApiOperation("修改用户信息")
+    @UserAuth
     public Result<Object> updateUser(@RequestBody User user){
         userService.updateUser(user);
         return Result.ok(HttpStatus.OK.getReasonPhrase());

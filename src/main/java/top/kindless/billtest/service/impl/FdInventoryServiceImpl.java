@@ -46,7 +46,7 @@ public class FdInventoryServiceImpl implements FdInventoryService {
         for (ListGoods listGoods : goodsList) {
             Integer amount = listGoods.getAmount();
             Integer goodsId = listGoods.getGoodsId();
-            fdInventory = findById(goodsId);
+            fdInventory = findByGoodsId(goodsId);
             Integer curAmount = fdInventory.getCurAmount();
             if (amount>curAmount){
                 throw new AmountOutOfBoundException("创建订单失败，库存不足").setErrorData(listGoods);
@@ -93,6 +93,11 @@ public class FdInventoryServiceImpl implements FdInventoryService {
         if (!fdInventoryOptional.isPresent())
             throw new BadRequestException("不存在该商品或已被删除").setErrorData(id);
         return fdInventoryOptional.get();
+    }
+
+    @Override
+    public FdInventory findByGoodsId(Integer goodsId) {
+        return fdInventoryRepository.findByGoodsId(goodsId);
     }
 
     @Override

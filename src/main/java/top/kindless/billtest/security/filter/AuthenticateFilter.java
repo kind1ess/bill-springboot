@@ -34,11 +34,11 @@ public class    AuthenticateFilter extends OncePerRequestFilter {
 
     protected final AntPathMatcher antPathMatcher;
     private final UrlPathHelper urlPathHelper = new UrlPathHelper();
-    private AuthenticateFailHandler authenticateFailHandler;
+    private final AuthenticateFailHandler authenticateFailHandler;
     private final RedisTemplate<String,Object> redisTemplate;
 
-    private Set<String> excludeUrlPatterns = new HashSet<>(16);
-    private Set<String> urlPatterns = new LinkedHashSet<>();
+    private final Set<String> excludeUrlPatterns = new HashSet<>(16);
+    private final Set<String> urlPatterns = new LinkedHashSet<>();
 
     AuthenticateFilter(RedisTemplate<String, Object> redisTemplate){
         this.redisTemplate = redisTemplate;
@@ -48,7 +48,10 @@ public class    AuthenticateFilter extends OncePerRequestFilter {
         addExcludeUrlPatterns(
                 "/api/user/signUp",
                 "/api/user/login",
-                "/api/goods/findAll"
+                "/api/goods/findAll",
+                "/api/admin/login"
+//                "/api/admin/addAdmin"
+//                "/api/order/findAllOrderTitleVo"
         );
     }
     @Override
@@ -93,8 +96,7 @@ public class    AuthenticateFilter extends OncePerRequestFilter {
         if (o == null){
             throw new UnAuthorizedException("授权信息已经过期");
         }else {
-            String className = o.getClass().getName();
-            if (className.equals("top.kindless.billtest.model.entity.User")){
+            if (o instanceof top.kindless.billtest.model.entity.User){
                 user = (User) o;
             }else {
                 staff = (Staff) o;

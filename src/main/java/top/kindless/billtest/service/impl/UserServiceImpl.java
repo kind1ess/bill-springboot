@@ -6,6 +6,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import top.kindless.billtest.config.properties.KindlessProperties;
 import top.kindless.billtest.exception.*;
 import top.kindless.billtest.model.entity.User;
@@ -62,9 +63,7 @@ public class UserServiceImpl implements UserService {
     public void logout() {
         String message = "未登录，不能注销";
         Authentication authentication = AuthContextHolder.getAuthContext().getAuthentication();
-        if (authentication == null){
-            throw new UnAuthorizedException(message);
-        }
+        Assert.notNull(authentication,"授权信息不能为空");
         String token = authentication.getToken();
         if (token == null){
             throw new UnAuthorizedException(message);
@@ -79,6 +78,8 @@ public class UserServiceImpl implements UserService {
             throw new AccountAlreadyExistException("账号不可用，该用户已存在！");
         }
         else {
+            user.setId(UUIDUtils.generateUserUUID());
+            user.setCreditScore(80);
             userRepository.save(user);
             log.info(user.getAccount()+"注册成功");
         }
@@ -97,9 +98,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVo getUserProfile() {
         Authentication authentication = AuthContextHolder.getAuthContext().getAuthentication();
-        if (authentication == null){
-            throw new UnAuthorizedException("请先登录");
-        }
+        Assert.notNull(authentication,"授权信息不能为空");
         User user = authentication.getUser();
         return new UserVo(
                 user.getId(),
@@ -115,9 +114,7 @@ public class UserServiceImpl implements UserService {
     public User updateUser(User user) {
         log.info(user.toString());
         Authentication authentication = AuthContextHolder.getAuthContext().getAuthentication();
-        if (authentication == null){
-            throw new UnAuthorizedException("未授权请先登录");
-        }
+        Assert.notNull(authentication,"授权信息不能为空");
         User authenticationUser = authentication.getUser();
         if (!authenticationUser.getId().equals(user.getId())){
             throw new ForbiddenException("禁止修改其他用户的数据");
@@ -125,7 +122,7 @@ public class UserServiceImpl implements UserService {
         user.setCreditScore(authenticationUser.getCreditScore());
         String token = authentication.getToken();
         redisTemplate.opsForValue().set(token,user,kindlessProperties.getTokenExpiredIn(),TimeUnit.SECONDS);
-        return userRepository.save(user);
+        return userRepository.saveAndFlush(user);
     }
 
     private AuthToken buildToken(User user){
@@ -134,20 +131,15 @@ public class UserServiceImpl implements UserService {
         Long timeout = kindlessProperties.getTokenExpiredIn();
         //将token缓存起来,并设置缓存时间
         redisTemplate.opsForValue().set(token,user,timeout,TimeUnit.SECONDS);
-        AuthToken authToken = new AuthToken();
-        authToken.setUserId(user.getId());
-        authToken.setToken(token);
-        System.out.println(timeout);
-        authToken.setExpiredIn(timeout);
         //缓存，设置缓存时间
 //        redisTemplate.opsForValue().set(userId,token,kindlessProperties.getTokenExpiredIn(), TimeUnit.SECONDS);
-        return authToken;
+        return new AuthToken(token,timeout,user.getId());
     }
 
     /**
      * 通过用户id判断是否存在
      * @param findAble 可以是用户id也可以是账号
-     * @return 如果查询出来都不为空则返回true
+     * @return 如果查询出来有一个不为空则返回true
      */
     private boolean isExist(String findAble){
         Optional<User> userOptional = userRepository.findById(findAble);

@@ -2,6 +2,8 @@ package top.kindless.billtest.service;
 
 import org.springframework.lang.NonNull;
 import org.springframework.transaction.annotation.Transactional;
+import top.kindless.billtest.model.common.ListGoodsWithoutPrice;
+import top.kindless.billtest.model.common.FlowReserveAmount;
 import top.kindless.billtest.model.entity.DetailEnter;
 
 import java.util.List;
@@ -43,4 +45,24 @@ public interface DetailEnterService {
      * @return
      */
     DetailEnter findDetailEnterById(@NonNull Integer id);
+
+    /**
+     * 生成并保存入库单明细
+     * @param billId 入库单id
+     * @param checkIdList 验收单id集合
+     */
+    void generateAndSaveDetailEnter(String billId,List<String> checkIdList);
+
+    /**
+     * 根据入库单id查询入库单明细信息
+     * @param billId 入库单id
+     * @return 入库单明细信息
+     */
+    List<ListGoodsWithoutPrice> findListGoodsByBillId(@NonNull String billId);
+
+    /**
+     * 统计入库数量
+     * @return 入库统计
+     */
+    List<FlowReserveAmount> countEnterAmount();
 }

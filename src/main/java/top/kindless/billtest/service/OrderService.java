@@ -4,8 +4,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.transaction.annotation.Transactional;
 import top.kindless.billtest.model.entity.BillOrder;
 import top.kindless.billtest.model.entity.DetailOrder;
-import top.kindless.billtest.model.dto.OrderTitleDto;
-import top.kindless.billtest.model.vo.OrderTitleVo;
+import top.kindless.billtest.model.params.VerifyParams;
+import top.kindless.billtest.model.vo.OrderPreviewVo;
 import top.kindless.billtest.model.vo.OrderVo;
 import top.kindless.billtest.service.common.BillService;
 
@@ -26,6 +26,7 @@ public interface OrderService extends BillService<BillOrder, DetailOrder> {
      * @return
      */
     @NonNull
+    @Transactional
     String getBillOrderIdByCartIds(@NonNull List<Integer> cartIds);
 
     /**
@@ -39,14 +40,14 @@ public interface OrderService extends BillService<BillOrder, DetailOrder> {
      * 查询用户的所有订单表头
      * @return
      */
-    OrderTitleVo findOrderTitlesByUserId();
+    OrderPreviewVo findOrderTitlesByUserId();
 
     /**
      * 保存订单表头
      * @param billOrder
      */
     @Transactional
-    BillOrder saveBillOrder(@NonNull BillOrder billOrder);
+    void saveBillOrder(@NonNull BillOrder billOrder);
 
     /**
      * 根据id删除订单
@@ -67,5 +68,45 @@ public interface OrderService extends BillService<BillOrder, DetailOrder> {
      * 查询所有的订单预览信息
      * @return
      */
-    OrderTitleVo findAllOrderTitleVo();
+    OrderPreviewVo findAllOrderTitleVo();
+
+    /**
+     * 查询所有的订单预览信息
+     * @return
+     */
+    OrderPreviewVo findAllOrderTitleVo(@NonNull Integer page,@NonNull Integer size);
+
+    /**
+     * 审核订单，更新订单的状态
+     * @param verifyParams
+     */
+    @Transactional
+    void verifyOrder(@NonNull VerifyParams verifyParams);
+
+    /**
+     * 根据状态id查询订单预览信息
+     * @param statusId 状态id
+     * @return 订单预览信息
+     */
+    OrderPreviewVo findOrderPreviewVoByStatusId(@NonNull Integer statusId);
+
+    /**
+     * 根据状态id查询订单预览信息
+     * @param statusId 状态id
+     * @param size
+     * @return 订单预览信息
+     */
+    OrderPreviewVo findOrderPreviewVoByStatusId(@NonNull Integer statusId,@NonNull Integer page,@NonNull Integer size);
+
+    /**
+     * 获取订货单数量
+     * @return
+     */
+    Long getCount();
+
+    /**
+     * 获取订货单数量
+     * @return
+     */
+    Long getCount(Integer statusId);
 }

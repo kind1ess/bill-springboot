@@ -2,6 +2,7 @@ package top.kindless.billtest.service;
 
 import org.springframework.lang.NonNull;
 import org.springframework.transaction.annotation.Transactional;
+import top.kindless.billtest.model.common.ListGoods;
 import top.kindless.billtest.model.entity.DetailOrder;
 
 import java.util.List;
@@ -56,4 +57,11 @@ public interface DetailOrderService {
      */
     @Transactional
     void deleteAllDetailOrdersByBillId(@NonNull String billId);
+
+    /**
+     *
+     * @param billId 订单id
+     * @return 订单详情
+     */
+    List<ListGoods> findAllListGoodsByBillId(@NonNull String billId);
 }

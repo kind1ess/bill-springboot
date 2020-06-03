@@ -1,4 +1,4 @@
-package top.kindless.billtest.model.dto;
+package top.kindless.billtest.model.common;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -10,10 +10,9 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderTitleDto {
-
+public class CommonBillPreview {
     @ApiModelProperty("订单编号")
-    private String orderId;
+    private String billId;
 
     @ApiModelProperty("创建时间")
     private Date createTime;

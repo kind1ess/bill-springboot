@@ -2,7 +2,9 @@ package top.kindless.billtest.service;
 
 import org.springframework.lang.NonNull;
 import org.springframework.transaction.annotation.Transactional;
+import top.kindless.billtest.model.common.CommonListGoods;
 import top.kindless.billtest.model.entity.DetailShortage;
+import top.kindless.billtest.model.params.ShortageParam;
 
 import java.util.List;
 
@@ -41,4 +43,9 @@ public interface DetailShortageService {
      * @return
      */
     DetailShortage findDetailShortageById(@NonNull Integer id);
+
+    @Transactional
+    void generateAndSaveDetailShortage(String billId, List<ShortageParam> params);
+
+    List<CommonListGoods> findListGoodsByBillId(@NonNull String billId);
 }

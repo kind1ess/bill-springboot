@@ -39,6 +39,13 @@ public interface FdInventoryService {
     FdInventory findById(@NonNull Integer id);
 
     /**
+     * 通过货物id查询
+     * @param goodsId
+     * @return
+     */
+    FdInventory findByGoodsId(@NonNull Integer goodsId);
+
+    /**
      * 更新
      * @param fdInventory
      * @return

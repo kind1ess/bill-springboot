@@ -6,6 +6,8 @@ import top.kindless.billtest.model.entity.BillPurchase;
 import top.kindless.billtest.model.entity.DetailPurchase;
 import top.kindless.billtest.service.common.BillService;
 
+import java.util.List;
+
 public interface PurchaseService extends BillService<BillPurchase, DetailPurchase> {
 
     /**
@@ -29,4 +31,17 @@ public interface PurchaseService extends BillService<BillPurchase, DetailPurchas
      */
     @Transactional
     void deleteBillPurchaseById(@NonNull String id);
+
+    /**
+     * 查询所有采购单id
+     * @return 所有采购单id
+     */
+    List<String> findAllId();
+
+    /**
+     * 根据id查询所有
+     * @param ids id集合
+     * @return List<BillPurchase>
+     */
+    List<BillPurchase> findAll(@NonNull List<String> ids);
 }

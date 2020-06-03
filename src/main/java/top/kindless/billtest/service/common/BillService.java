@@ -3,12 +3,13 @@ package top.kindless.billtest.service.common;
 
 import org.springframework.lang.NonNull;
 import org.springframework.transaction.annotation.Transactional;
+import top.kindless.billtest.exception.InternalServerErrorException;
 
 import java.util.List;
 
 /**
- * 公共单据服务
- * B是单据     BillXXX
+ * 公共单据服务<br>
+ * B是单据     BillXXX<br>
  * D是单据详情   DetailXXX
  */
 public interface BillService<B,D> {
@@ -53,4 +54,23 @@ public interface BillService<B,D> {
      * @return
      */
     List<B> findAllBill();
+
+    /**
+     * 更改订单状态
+     * @param billId   单据id
+     * @param statusId 状态id
+     */
+    @Transactional
+    default void setBillStatus(@NonNull String billId, @NonNull Integer statusId) {
+        throw new InternalServerErrorException("不能更改单据状态");
+    }
+
+    /**
+     * 获取单据当前状态
+     * @param billId 单据id
+     * @return 状态id
+     */
+    default Integer getBillStatusId(@NonNull String billId) {
+        return null;
+    }
 }

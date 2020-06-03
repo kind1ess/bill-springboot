@@ -8,4 +8,6 @@ public interface FdInventoryRepository extends JpaRepository<FdInventory,Integer
 
     @Query(value = "select cur_amount from fd_inventory where goods_id=?1",nativeQuery = true)
     Integer findAmountById(Integer id);
+
+    FdInventory findByGoodsId(Integer goodsId);
 }
