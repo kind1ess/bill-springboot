@@ -17,13 +17,13 @@ public class AdminBillTitle extends BillTitle{
     @ApiModelProperty("更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("仓库管理员id")
+    @ApiModelProperty("管理员id")
     private String staffId;
 
-    @ApiModelProperty("仓库管理员姓名")
+    @ApiModelProperty("管理员姓名")
     private String staffName;
 
-    @ApiModelProperty("仓库管理员电话")
+    @ApiModelProperty("管理员电话")
     private String staffTelephone;
 
     public AdminBillTitle(String billId,

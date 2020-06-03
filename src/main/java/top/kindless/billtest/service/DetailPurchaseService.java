@@ -2,6 +2,7 @@ package top.kindless.billtest.service;
 
 import org.springframework.lang.NonNull;
 import org.springframework.transaction.annotation.Transactional;
+import top.kindless.billtest.model.common.PurchaseListGoods;
 import top.kindless.billtest.model.entity.DetailPurchase;
 import top.kindless.billtest.model.params.ShortageParam;
 
@@ -52,4 +53,8 @@ public interface DetailPurchaseService {
      */
     List<DetailPurchase> findAllByBillId(@NonNull String billId);
 
+    @Transactional
+    void generateAndSaveDetailPurchase(String billId, List<String> billIdList);
+
+    List<PurchaseListGoods> findListGoodsByBillId(@NonNull String billId);
 }

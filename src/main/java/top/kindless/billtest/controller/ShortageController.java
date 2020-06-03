@@ -35,28 +35,28 @@ public class ShortageController {
     }
 
     @GetMapping("/findAllShortagePreviewVo")
-    @ApiOperation("获取所有出库单预览信息")
+    @ApiOperation("获取所有缺货单预览信息")
     @RoleAuth({Role.STORE_MAN,Role.SUPER_ADMIN})
     public Result<CommonBillPreviewVo> findAllShortagePreviewVo(){
         return Result.ok(HttpStatus.OK.getReasonPhrase(),shortageService.findAllShortagePreviewVo());
     }
 
     @GetMapping("/findAllShortagePreviewVo/{page}/{size}")
-    @ApiOperation("获取所有出库单预览信息")
+    @ApiOperation("获取所有缺货单预览信息")
     @RoleAuth({Role.STORE_MAN,Role.SUPER_ADMIN})
     public Result<CommonBillPreviewVo> findAllShortagePreviewVo(@PathVariable Integer page,@PathVariable Integer size){
         return Result.ok(HttpStatus.OK.getReasonPhrase(),shortageService.findAllShortagePreviewVo(page, size));
     }
 
     @GetMapping("/findAllShortagePreviewVo/{statusId}")
-    @ApiOperation("获取所有出库单预览信息")
+    @ApiOperation("获取所有缺货单预览信息")
     @RoleAuth({Role.STORE_MAN,Role.BUYER,Role.SUPER_ADMIN})
     public Result<CommonBillPreviewVo> findAllShortagePreviewVo(@PathVariable Integer statusId){
         return Result.ok(HttpStatus.OK.getReasonPhrase(),shortageService.findAllShortagePreviewVo(statusId));
     }
 
     @GetMapping("/findAllShortagePreviewVo/{statusId}/{page}/{size}")
-    @ApiOperation("获取所有出库单预览信息")
+    @ApiOperation("获取所有缺货单预览信息")
     @RoleAuth({Role.STORE_MAN,Role.BUYER,Role.SUPER_ADMIN})
     public Result<CommonBillPreviewVo> findAllShortagePreviewVo(@PathVariable Integer statusId,
                                                                 @PathVariable Integer page,

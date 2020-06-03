@@ -56,4 +56,9 @@ public class StatusConst {
      * 待采购
      */
     public static final Integer TO_BE_PURCHASE = 11;
+
+    /**
+     * 已采购
+     */
+    public static final Integer PURCHASED = 12;
 }

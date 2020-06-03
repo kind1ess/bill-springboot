@@ -48,4 +48,6 @@ public interface DetailShortageService {
     void generateAndSaveDetailShortage(String billId, List<ShortageParam> params);
 
     List<CommonListGoods> findListGoodsByBillId(@NonNull String billId);
+
+    List<DetailShortage> findAllDetailByBillId(String billId);
 }

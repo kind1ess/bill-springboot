@@ -8,7 +8,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import top.kindless.billtest.exception.InternalServerErrorException;
-import top.kindless.billtest.exception.UnAuthorizedException;
 import top.kindless.billtest.model.common.AdminBillTitle;
 import top.kindless.billtest.model.common.CommonListGoods;
 import top.kindless.billtest.model.entity.BillShortage;
@@ -137,6 +136,13 @@ public class ShortageServiceImpl implements ShortageService {
     @Override
     public Long getCount(Integer statusId) {
         return billShortageRepository.countAllByStatusId(statusId);
+    }
+
+    @Override
+    public void setBillStatus(String billId, Integer statusId) {
+        BillShortage billShortage = findBillById(billId);
+        billShortage.setStatusId(statusId);
+        saveBillShortage(billShortage);
     }
 
     private String generateAndSaveShortage(String staffId, List<ShortageParam> params){

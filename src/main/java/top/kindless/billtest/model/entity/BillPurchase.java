@@ -1,5 +1,6 @@
 package top.kindless.billtest.model.entity;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -19,15 +20,24 @@ import java.util.Date;
 public class BillPurchase implements Serializable {
 
     @Id
+    @ApiModelProperty(hidden = true)
     private String id;
 
     @CreatedDate
+    @ApiModelProperty(hidden = true)
     private Date createTime;
 
     @LastModifiedDate
+    @ApiModelProperty(hidden = true)
     private Date updateTime;
 
+    @ApiModelProperty(hidden = true)
     private String staffId;
 
+    @ApiModelProperty(hidden = true)
     private Integer statusId;
+
+    private String sendTime;
+
+    private String address;
 }

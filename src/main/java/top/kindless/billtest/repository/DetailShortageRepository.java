@@ -18,4 +18,6 @@ public interface DetailShortageRepository extends JpaRepository<DetailShortage,I
             "and d.billId = :billId " +
             "order by d.goodsId,d.id,d.billId")
     List<CommonListGoods> findListGoodsByBillId(@Param("billId") String billId);
+
+    List<DetailShortage> findAllByBillId(String billId);
 }

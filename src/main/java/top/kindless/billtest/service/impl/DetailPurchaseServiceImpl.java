@@ -1,24 +1,36 @@
 package top.kindless.billtest.service.impl;
 
 import org.springframework.stereotype.Service;
+import top.kindless.billtest.exception.BadRequestException;
 import top.kindless.billtest.exception.InternalServerErrorException;
-import top.kindless.billtest.exception.UnAuthorizedException;
+import top.kindless.billtest.model.common.PurchaseListGoods;
+import top.kindless.billtest.model.entity.BillShortage;
 import top.kindless.billtest.model.entity.DetailPurchase;
+import top.kindless.billtest.model.entity.DetailShortage;
 import top.kindless.billtest.repository.DetailPurchaseRepository;
-import top.kindless.billtest.security.auth.Authentication;
-import top.kindless.billtest.security.context.AuthContextHolder;
 import top.kindless.billtest.service.DetailPurchaseService;
+import top.kindless.billtest.service.DetailShortageService;
+import top.kindless.billtest.service.ShortageService;
+import top.kindless.billtest.utils.StatusConst;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class DetailPurchaseServiceImpl implements DetailPurchaseService {
 
     private final DetailPurchaseRepository detailPurchaseRepository;
+    private final DetailShortageService detailShortageService;
+    private final ShortageService shortageService;
 
-    public DetailPurchaseServiceImpl(DetailPurchaseRepository detailPurchaseRepository) {
+    public DetailPurchaseServiceImpl(DetailPurchaseRepository detailPurchaseRepository,
+                                     DetailShortageService detailShortageService,
+                                     ShortageService shortageService) {
         this.detailPurchaseRepository = detailPurchaseRepository;
+        this.detailShortageService = detailShortageService;
+        this.shortageService = shortageService;
     }
 
     @Override
@@ -55,5 +67,36 @@ public class DetailPurchaseServiceImpl implements DetailPurchaseService {
         return detailPurchaseRepository.findAllByBillId(billId);
     }
 
+    @Override
+    public void generateAndSaveDetailPurchase(String billId, List<String> billIdList) {
+        boolean allMatch = billIdList.stream()
+                .allMatch(s -> {
+                    BillShortage billById = shortageService.findBillById(s);
+                    return billById.getStatusId().equals(StatusConst.TO_BE_PURCHASE);
+                });
+        if (!allMatch){
+            throw new BadRequestException("不能将待采购状态以外的缺货单加入采购单");
+        }
+        List<DetailPurchase> detailPurchases = new ArrayList<>();
+        billIdList.forEach(shortageId -> {
+            List<DetailShortage> detailShortageList = detailShortageService.findAllDetailByBillId(shortageId);
+            List<DetailPurchase> detailPurchaseList = detailShortageList.stream()
+                    .map(detailShortage -> {
+                        DetailPurchase detailPurchase = new DetailPurchase();
+                        detailPurchase.setBillId(billId);
+                        detailPurchase.setShortageId(shortageId);
+                        detailPurchase.setGoodsId(detailShortage.getGoodsId());
+                        detailPurchase.setAmount(detailShortage.getAmount());
+                        return detailPurchase;
+                    }).collect(Collectors.toList());
+            shortageService.setBillStatus(shortageId,StatusConst.PURCHASED);
+            detailPurchases.addAll(detailPurchaseList);
+        });
+        saveDetailPurchaseList(detailPurchases);
+    }
 
+    @Override
+    public List<PurchaseListGoods> findListGoodsByBillId(String billId) {
+        return detailPurchaseRepository.findListGoodsByBillId(billId);
+    }
 }

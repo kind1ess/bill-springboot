@@ -70,4 +70,9 @@ public class DetailShortageServiceImpl implements DetailShortageService {
     public List<CommonListGoods> findListGoodsByBillId(String billId) {
         return detailShortageRepository.findListGoodsByBillId(billId);
     }
+
+    @Override
+    public List<DetailShortage> findAllDetailByBillId(String billId) {
+        return detailShortageRepository.findAllByBillId(billId);
+    }
 }
