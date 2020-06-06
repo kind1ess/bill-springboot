@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import top.kindless.billtest.exception.AmountOutOfBoundException;
 import top.kindless.billtest.exception.BadRequestException;
 import top.kindless.billtest.exception.InternalServerErrorException;
+import top.kindless.billtest.model.common.AllReserveAmount;
 import top.kindless.billtest.model.common.CommonGoodsInfo;
 import top.kindless.billtest.model.common.ListGoods;
 import top.kindless.billtest.model.dto.GoodsDto;
@@ -18,21 +19,21 @@ import top.kindless.billtest.model.vo.GoodsVo;
 import top.kindless.billtest.repository.FdInventoryRepository;
 import top.kindless.billtest.service.FdInventoryService;
 import top.kindless.billtest.service.InventoryService;
+import top.kindless.billtest.service.ReserveService;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @CacheConfig(cacheNames = "fdInventory")
 public class FdInventoryServiceImpl implements FdInventoryService {
 
     private final FdInventoryRepository fdInventoryRepository;
-    private final InventoryService inventoryService;
 
-    public FdInventoryServiceImpl(FdInventoryRepository fdInventoryRepository,
-                                  InventoryService inventoryService) {
+    public FdInventoryServiceImpl(FdInventoryRepository fdInventoryRepository) {
         this.fdInventoryRepository = fdInventoryRepository;
-        this.inventoryService = inventoryService;
     }
 
     @Override
@@ -58,20 +59,7 @@ public class FdInventoryServiceImpl implements FdInventoryService {
 
     @Override
     public GoodsVo findAllFdGoods() {
-        List<FdInventory> fdInventoryList = fdInventoryRepository.findAll();
-        if (fdInventoryList.isEmpty()){
-            throw new InternalServerErrorException("仓库数据不存在或已被删除");
-        }
-        List<GoodsDto> goodsDtoList = new ArrayList<>();
-        GoodsDto goodsDto;
-        for (FdInventory fdInventory : fdInventoryList) {
-            Integer goodsId = fdInventory.getGoodsId();
-            Integer curAmount = fdInventory.getCurAmount();
-            Inventory inventory = inventoryService.findById(goodsId);
-            CommonGoodsInfo commonGoodsInfo = inventoryService.convertInventoryToCommonGoodsInfo(inventory);
-            goodsDto = convertCommonGoodsInfoToGoodsDto(commonGoodsInfo,curAmount);
-            goodsDtoList.add(goodsDto);
-        }
+        List<GoodsDto> goodsDtoList = fdInventoryRepository.findAllGoodsDto();
         return new GoodsVo(goodsDtoList);
     }
 

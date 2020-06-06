@@ -30,7 +30,7 @@ import java.util.Set;
 
 @Component
 @Slf4j
-public class    AuthenticateFilter extends OncePerRequestFilter {
+public class AuthenticateFilter extends OncePerRequestFilter {
 
     protected final AntPathMatcher antPathMatcher;
     private final UrlPathHelper urlPathHelper = new UrlPathHelper();
@@ -49,7 +49,8 @@ public class    AuthenticateFilter extends OncePerRequestFilter {
                 "/api/user/signUp",
                 "/api/user/login",
                 "/api/goods/findAll",
-                "/api/admin/login"
+                "/api/admin/login",
+                "/api/reserve/findAllCountFromUser"
 //                "/api/admin/addAdmin"
 //                "/api/order/findAllOrderTitleVo"
         );

@@ -85,4 +85,5 @@ public interface ShortageService extends BillService<BillShortage, DetailShortag
      */
     Long getCount(@NonNull Integer statusId);
 
+    Integer findStatusIdById(@NonNull String id);
 }

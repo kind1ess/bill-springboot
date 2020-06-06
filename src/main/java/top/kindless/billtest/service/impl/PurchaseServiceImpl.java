@@ -172,6 +172,11 @@ public class PurchaseServiceImpl implements PurchaseService {
         saveBillPurchase(billPurchase);
     }
 
+    @Override
+    public Integer getBillStatusId(String billId) {
+        return billPurchaseRepository.findStatusIdById(billId);
+    }
+
     private String generateAndSaveBillPurchase(String staffId, List<String> billIdList) {
         BillPurchase billPurchase = new BillPurchase();
         String billId = BillNoUtils.generateBillId("PUR");

@@ -139,6 +139,11 @@ public class ShortageServiceImpl implements ShortageService {
     }
 
     @Override
+    public Integer findStatusIdById(String id) {
+        return billShortageRepository.findStatusIdById(id);
+    }
+
+    @Override
     public void setBillStatus(String billId, Integer statusId) {
         BillShortage billShortage = findBillById(billId);
         billShortage.setStatusId(statusId);

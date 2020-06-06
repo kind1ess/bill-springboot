@@ -18,6 +18,7 @@ public interface DetailPurchaseRepository extends JpaRepository<DetailPurchase,I
             "where d.goodsId = i.goodsId " +
             "and i.commodityId = c.id " +
             "and i.specificationId = s.id " +
+            "and d.billId = :billId " +
             "order by d.goodsId,d.id,d.billId")
     List<PurchaseListGoods> findListGoodsByBillId(@Param("billId") String billId);
 }

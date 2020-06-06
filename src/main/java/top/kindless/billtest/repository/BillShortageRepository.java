@@ -53,4 +53,7 @@ public interface BillShortageRepository extends JpaRepository<BillShortage,Strin
     List<CommonBillPreviewWithUpdateTime> findAllShortagePreviewVo(@Param("statusId") Integer statusId,Pageable pageable);
 
     Long countAllByStatusId(Integer statusId);
+
+    @Query(value = "select statusId from BillShortage where id = :id")
+    Integer findStatusIdById(@Param("id") String id);
 }

@@ -70,10 +70,8 @@ public class DetailPurchaseServiceImpl implements DetailPurchaseService {
     @Override
     public void generateAndSaveDetailPurchase(String billId, List<String> billIdList) {
         boolean allMatch = billIdList.stream()
-                .allMatch(s -> {
-                    BillShortage billById = shortageService.findBillById(s);
-                    return billById.getStatusId().equals(StatusConst.TO_BE_PURCHASE);
-                });
+                .map(shortageService::findStatusIdById)
+                .allMatch(integer -> integer.equals(StatusConst.TO_BE_PURCHASE));
         if (!allMatch){
             throw new BadRequestException("不能将待采购状态以外的缺货单加入采购单");
         }

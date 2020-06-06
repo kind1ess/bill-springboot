@@ -1,7 +1,10 @@
 package top.kindless.billtest.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.transaction.annotation.Transactional;
+import top.kindless.billtest.model.dto.OrderPreviewDto;
 import top.kindless.billtest.model.entity.BillOrder;
 import top.kindless.billtest.model.entity.DetailOrder;
 import top.kindless.billtest.model.params.VerifyParams;
@@ -109,4 +112,5 @@ public interface OrderService extends BillService<BillOrder, DetailOrder> {
      * @return
      */
     Long getCount(Integer statusId);
+
 }

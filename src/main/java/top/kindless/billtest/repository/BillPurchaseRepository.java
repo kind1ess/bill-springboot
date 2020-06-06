@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.lang.NonNull;
 import top.kindless.billtest.model.common.CommonBillPreviewWithUpdateTime;
 import top.kindless.billtest.model.dto.PurchaseDto;
 import top.kindless.billtest.model.entity.BillPurchase;
@@ -61,4 +62,7 @@ public interface BillPurchaseRepository extends JpaRepository<BillPurchase,Strin
     List<CommonBillPreviewWithUpdateTime> findAllPreview(@Param("statusId") Integer statusId,Pageable pageable);
 
     Long countAllByStatusId(Integer statusId);
+
+    @Query(value = "select statusId from BillPurchase where id = :id")
+    Integer findStatusIdById(@NonNull @Param("id") String id);
 }

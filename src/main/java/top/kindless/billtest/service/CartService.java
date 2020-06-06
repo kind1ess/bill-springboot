@@ -82,6 +82,7 @@ public interface CartService {
      * 保存购物车
      * @param cart
      */
+    @Transactional
     void saveCart(@NonNull Cart cart);
 
     /**
