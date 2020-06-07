@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import top.kindless.billtest.log.annotation.SysLog;
 import top.kindless.billtest.model.params.ShortageParams;
 import top.kindless.billtest.model.vo.CommonBillPreviewVo;
 import top.kindless.billtest.model.vo.ShortageVo;
@@ -23,6 +24,7 @@ public class ShortageController {
     @PostMapping("/generateShortage")
     @ApiOperation("生成缺货单")
     @RoleAuth({Role.STORE_MAN,Role.SUPER_ADMIN})
+    @SysLog("生成缺货单")
     public Result<String> generateShortage(@RequestBody ShortageParams shortageParams){
         return Result.ok(HttpStatus.OK.getReasonPhrase(),shortageService.generateBillShortage(shortageParams));
     }

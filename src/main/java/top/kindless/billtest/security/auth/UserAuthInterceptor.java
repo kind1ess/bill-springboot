@@ -5,6 +5,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import top.kindless.billtest.exception.UnAuthorizedException;
 import top.kindless.billtest.security.context.AuthContextHolder;
@@ -12,6 +13,7 @@ import top.kindless.billtest.security.context.AuthContextHolder;
 @Aspect
 @Component
 @Slf4j
+@Order(value = 1)
 public class UserAuthInterceptor {
 
 

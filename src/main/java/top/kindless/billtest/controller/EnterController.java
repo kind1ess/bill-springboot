@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import top.kindless.billtest.log.annotation.SysLog;
 import top.kindless.billtest.model.params.BillParams;
 import top.kindless.billtest.model.vo.CommonBillPreviewVo;
 import top.kindless.billtest.model.vo.EnterVo;
@@ -24,6 +25,7 @@ public class EnterController {
     @PostMapping("/generateBillEnter")
     @ApiOperation("生成入库单")
     @RoleAuth({Role.STORE_MAN,Role.SUPER_ADMIN})
+    @SysLog("生成入库单")
     public Result<String> generateBillEnter(@ApiParam("验收单编号") @RequestBody BillParams billParams){
         return Result.ok(HttpStatus.OK.getReasonPhrase(),enterService.generateEnter(billParams));
     }

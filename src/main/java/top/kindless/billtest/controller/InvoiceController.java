@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import top.kindless.billtest.log.annotation.SysLog;
 import top.kindless.billtest.model.params.BillParams;
 import top.kindless.billtest.model.vo.CommonBillPreviewVo;
 import top.kindless.billtest.model.vo.InvoiceVo;
@@ -26,6 +27,7 @@ public class InvoiceController {
     @PostMapping("/generateInvoiceList")
     @ApiOperation("生成发货单")
     @RoleAuth({Role.SHIPPER,Role.SUPER_ADMIN})
+    @SysLog("生成发货单")
     public Result<CommonBillPreviewVo> generateInvoiceList(@RequestBody BillParams billParams){
         return Result.ok(HttpStatus.OK.getReasonPhrase(),invoiceService.generateInvoiceList(billParams));
     }

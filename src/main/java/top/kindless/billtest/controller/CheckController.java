@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import top.kindless.billtest.log.annotation.SysLog;
 import top.kindless.billtest.model.params.BillParams;
 import top.kindless.billtest.model.vo.CheckVo;
 import top.kindless.billtest.model.vo.CommonBillPreviewVo;
@@ -24,6 +25,7 @@ public class CheckController {
     @PostMapping("/generateBillCheck")
     @ApiOperation("生成验收单")
     @RoleAuth({Role.INSPECTOR,Role.SUPER_ADMIN})
+    @SysLog("生成验收单")
     public Result<String> generateBillCheck(@RequestBody @ApiParam("关联单据id集合") BillParams billParams){
         return Result.ok(HttpStatus.OK.getReasonPhrase(),checkService.generateCheck(billParams));
     }

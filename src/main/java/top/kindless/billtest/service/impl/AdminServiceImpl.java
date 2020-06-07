@@ -6,6 +6,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import top.kindless.billtest.config.properties.KindlessProperties;
 import top.kindless.billtest.exception.*;
 import top.kindless.billtest.model.dto.StaffPreviewDto;
@@ -20,8 +23,10 @@ import top.kindless.billtest.security.context.AuthContextHolder;
 import top.kindless.billtest.security.token.AuthToken;
 import top.kindless.billtest.service.AdminService;
 import top.kindless.billtest.service.DepartmentService;
+import top.kindless.billtest.utils.HttpUtils;
 import top.kindless.billtest.utils.UUIDUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +50,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public AuthToken adminLogin(LoginParams loginParams) {
+    public AuthToken adminLogin(LoginParams loginParams) { ;
         String message = "用户名或密码错误";
         String account = loginParams.getAccount();
         Staff staff = staffRepository.findByAccount(account);

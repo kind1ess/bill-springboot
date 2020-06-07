@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import top.kindless.billtest.log.annotation.SysLog;
 import top.kindless.billtest.model.params.PurchaseParams;
 import top.kindless.billtest.model.vo.CommonBillPreviewVo;
 import top.kindless.billtest.model.vo.PurchaseVo;
@@ -23,6 +24,7 @@ public class PurchaseController {
     @PostMapping("/generatePurchase")
     @ApiOperation("生成采购单")
     @RoleAuth({Role.BUYER,Role.SUPER_ADMIN})
+    @SysLog("生成采购单")
     public Result<String> generatePurchase(@RequestBody PurchaseParams purchaseParams){
         return Result.ok(HttpStatus.OK.getReasonPhrase(),purchaseService.generatePurchase(purchaseParams));
     }

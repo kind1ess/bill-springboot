@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import top.kindless.billtest.log.annotation.SysLog;
 import top.kindless.billtest.model.params.BillParams;
 import top.kindless.billtest.model.vo.CommonBillPreviewVo;
 import top.kindless.billtest.model.vo.OdoVo;
@@ -26,6 +27,7 @@ public class OdoController {
     @PostMapping("/addToOdo")
     @ApiOperation("将订货单添加到出库单")
     @RoleAuth({Role.STORE_MAN,Role.SUPER_ADMIN})
+    @SysLog("生成出库单")
     public Result<String> addToOdo(@RequestBody BillParams billParams) {
         return Result.ok(HttpStatus.OK.getReasonPhrase(), odoService.addToOdo(billParams));
     }

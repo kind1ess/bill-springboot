@@ -6,6 +6,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import top.kindless.billtest.exception.ForbiddenException;
@@ -21,6 +22,7 @@ import java.util.List;
 @Aspect
 @Component
 @Slf4j
+@Order(value = 1)
 public class RoleAuthInterceptor {
 
     @Pointcut("@annotation(top.kindless.billtest.security.annotation.RoleAuth)")

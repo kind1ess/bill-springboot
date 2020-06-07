@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import top.kindless.billtest.log.annotation.SysLog;
 import top.kindless.billtest.model.entity.Staff;
 import top.kindless.billtest.model.params.LoginParams;
 import top.kindless.billtest.model.vo.StaffPreviewVo;
@@ -33,6 +34,7 @@ public class AdminController {
     @PostMapping("/adminLogout")
     @ApiOperation("管理员注销")
     @RoleAuth(Role.ALL_ADMIN)
+    @SysLog("管理员注销")
     public Result<Object> adminLogout(){
         adminService.adminLogout();
         return Result.ok(HttpStatus.OK.getReasonPhrase());
@@ -41,6 +43,7 @@ public class AdminController {
     @PostMapping("/addAdmin")
     @ApiOperation("添加管理员")
     @RoleAuth({Role.HR,Role.SUPER_ADMIN})
+    @SysLog("添加管理员")
     public Result<Object> addAdmin(@RequestBody Staff staff){
         adminService.addAdmin(staff);
         return Result.ok(HttpStatus.OK.getReasonPhrase());
@@ -56,6 +59,7 @@ public class AdminController {
     @GetMapping("/getAllAdminPreview")
     @ApiOperation("获取所有管理员信息")
     @RoleAuth({Role.HR,Role.SUPER_ADMIN})
+    @SysLog("获取所有管理员信息")
     public Result<StaffPreviewVo> getAllAdminPreview(){
         return Result.ok(HttpStatus.OK.getReasonPhrase(),adminService.findAllStaffPreview());
     }
@@ -63,6 +67,7 @@ public class AdminController {
     @DeleteMapping("/deleteAdminById/{staffId}")
     @ApiOperation("删除员工")
     @RoleAuth(Role.HR)
+    @SysLog("删除员工")
     public Result<Object> deleteAdminById(@PathVariable String staffId){
         adminService.deleteStaffById(staffId);
         return Result.ok(HttpStatus.OK.getReasonPhrase());
@@ -71,6 +76,7 @@ public class AdminController {
     @GetMapping("/findAdminPreviewByDepartmentId/{departmentId}")
     @ApiOperation("根据部门查询员工")
     @RoleAuth({Role.HR,Role.SUPER_ADMIN})
+    @SysLog("根据部门查询员工")
     public Result<StaffPreviewVo> findAdminPreviewByDepartmentId(@PathVariable("departmentId") Integer departmentId){
         return Result.ok(HttpStatus.OK.getReasonPhrase(),adminService.findStaffPreviewByDepartmentId(departmentId));
     }
@@ -78,6 +84,7 @@ public class AdminController {
     @GetMapping("/findAllAdminVo")
     @ApiOperation("查询所有员工信息")
     @RoleAuth({Role.HR,Role.SUPER_ADMIN})
+    @SysLog("查询所有员工信息")
     public Result<List<StaffVo>> findAllAdminVo(){
         return Result.ok(HttpStatus.OK.getReasonPhrase(),adminService.findAllStaffVo());
     }

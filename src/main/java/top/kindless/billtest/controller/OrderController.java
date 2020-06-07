@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import top.kindless.billtest.log.annotation.SysLog;
 import top.kindless.billtest.model.dto.OrderPreviewDto;
 import top.kindless.billtest.model.params.OrderParams;
 import top.kindless.billtest.model.params.VerifyParams;
@@ -67,6 +68,7 @@ public class OrderController {
     @PostMapping("/verifyOrder")
     @ApiOperation("销售员审核订单")
     @RoleAuth({Role.SALESPERSON,Role.SUPER_ADMIN})
+    @SysLog("审核订单")
     public Result<Object> verifyOrder(@RequestBody VerifyParams verifyParams){
         orderService.verifyOrder(verifyParams);
         return Result.ok(HttpStatus.OK.getReasonPhrase());
