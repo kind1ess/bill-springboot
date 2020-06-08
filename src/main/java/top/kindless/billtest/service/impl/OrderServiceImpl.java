@@ -76,13 +76,6 @@ public class OrderServiceImpl implements OrderService {
         String billId = generateAndSaveBillOrder(userId);
         //生成该订单的订单详情
         generateAndSaveDetailOrders(cartDtoList,billId);
-//        //查询出订单（获取时间戳）
-//        BillOrder billOrderByQuery = findBillById(billId);
-        //将数据库订单信息（包括订单详情信息）转换为前台接收的数据
-//        OrderDto orderDto = convertBillOrderToOrderDto(billOrder);
-        List<ListGoods> goodsList = cartService.convertCartDtoListToGoodsList(cartDtoList);
-        //修改库存
-        fdInventoryService.reduceFdInventoryByOrderGoodsList(goodsList);
         //删除购物车
         cartService.deleteCartsByIds(cartIds);
         return billId;

@@ -8,7 +8,7 @@ import top.kindless.billtest.model.entity.SysLogEntity;
 public interface SysLogService {
 
     @Transactional
-    void save(@NonNull SysLogEntity sysLogEntity);
+    SysLogEntity save(@NonNull SysLogEntity sysLogEntity);
 
     Page<SysLogEntity> listAll(@NonNull Integer page,@NonNull Integer size);
 }

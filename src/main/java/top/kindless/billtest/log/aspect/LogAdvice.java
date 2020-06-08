@@ -66,9 +66,9 @@ public class LogAdvice {
         String methodName = signature.getName();
         sysLogEntity.setRequestMethod(className+"."+methodName+"()");
         Object[] args = joinPoint.getArgs();
-        log.warn("参数们"+Arrays.toString(args));
+//        log.warn("参数们"+Arrays.toString(args));
         String requestParams = JsonUtils.convertToJson(args);
-        log.warn("参数。。。。"+requestParams);
+//        log.warn("参数。。。。"+requestParams);
         sysLogEntity.setRequestParams(requestParams);
         Authentication authentication = AuthContextHolder.getAuthContext().getAuthentication();
         Assert.notNull(authentication,"验证信息不能为空");
@@ -79,7 +79,7 @@ public class LogAdvice {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         Assert.notNull(requestAttributes,"请求属性不能为空");
         HttpServletRequest request = requestAttributes.getRequest();
-        log.warn("remoteAddr"+request.getRemoteAddr());
+//        log.warn("remoteAddr"+request.getRemoteAddr());
         String ip = request.getRemoteAddr();
         if (ip.equals("127.0.0.1") || ip.equals("0:0:0:0:0:0:0:1")) {
             //根据网卡取本机配置的IP
@@ -93,8 +93,17 @@ public class LogAdvice {
             ip = inet.getHostAddress();
         }
         sysLogEntity.setIp(ip);
-        log.info("ip....."+ip);
-        sysLogEntity.setIp(ip);
-        sysLogService.save(sysLogEntity);
+//        log.info("ip....."+ip);
+//        sysLogEntity.setIp(ip);
+        SysLogEntity sysLogEntity1 = sysLogService.save(sysLogEntity);
+        log.info("管理员账号{}，姓名{}，执行了{}，请求的方法为：{}，请求参数为：{}，执行时间为：{}毫秒，请求ip：{}，请求创建时间{}",
+                sysLogEntity1.getStaffAccount(),
+                sysLogEntity1.getStaffName(),
+                sysLogEntity1.getOperation(),
+                sysLogEntity1.getRequestMethod(),
+                sysLogEntity1.getRequestParams(),
+                sysLogEntity1.getTime(),
+                sysLogEntity1.getIp(),
+                sysLogEntity1.getDate());
     }
 }

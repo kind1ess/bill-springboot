@@ -18,12 +18,12 @@ public interface FdInventoryService {
     @NonNull
     Integer findAmountById(@NonNull Integer id);
 
-    /**
-     * 根据订单减少前台库存
-     * @param goodsList
-     */
-    @Transactional
-    void reduceFdInventoryByOrderGoodsList(@NonNull List<ListGoods> goodsList);
+//    /**
+//     * 根据订单减少前台库存
+//     * @param goodsList
+//     */
+//    @Transactional
+//    void reduceFdInventoryByOrderGoodsList(@NonNull List<ListGoods> goodsList);
 
     /**
      * 获取所有商品信息

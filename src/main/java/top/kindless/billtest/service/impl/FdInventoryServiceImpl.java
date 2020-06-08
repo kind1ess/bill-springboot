@@ -41,21 +41,6 @@ public class FdInventoryServiceImpl implements FdInventoryService {
         return fdInventoryRepository.findAmountById(id);
     }
 
-    @Override
-    public void reduceFdInventoryByOrderGoodsList(List<ListGoods> goodsList) {
-        FdInventory fdInventory;
-        for (ListGoods listGoods : goodsList) {
-            Integer amount = listGoods.getAmount();
-            Integer goodsId = listGoods.getGoodsId();
-            fdInventory = findByGoodsId(goodsId);
-            Integer curAmount = fdInventory.getCurAmount();
-            if (amount>curAmount){
-                throw new AmountOutOfBoundException("创建订单失败，库存不足").setErrorData(listGoods);
-            }
-            fdInventory.setCurAmount(curAmount-amount);
-            updateFdInventory(fdInventory);
-        }
-    }
 
     @Override
     public GoodsVo findAllFdGoods() {
@@ -99,30 +84,4 @@ public class FdInventoryServiceImpl implements FdInventoryService {
         fdInventoryRepository.deleteById(id);
     }
 
-    /**
-     * 将CommonGoodsInfo转换为GoodsDto
-     * @param commonGoodsInfo must not be null
-     * @param goodsDtoAmount must not be null
-     * @return goodsDto must not be null
-     */
-    @NonNull
-    private GoodsDto convertCommonGoodsInfoToGoodsDto(@NonNull CommonGoodsInfo commonGoodsInfo,@NonNull Integer goodsDtoAmount){
-        Integer goodsId = commonGoodsInfo.getGoodsId();
-        Integer commodityId = commonGoodsInfo.getCommodityId();
-        Integer specificationId = commonGoodsInfo.getSpecificationId();
-        String commodityName = commonGoodsInfo.getCommodityName();
-        String specificationName = commonGoodsInfo.getSpecificationName();
-        Float price = commonGoodsInfo.getPrice();
-        String imgUrl = commonGoodsInfo.getImgUrl();
-        GoodsDto goodsDto = new GoodsDto();
-        goodsDto.setGoodsId(goodsId);
-        goodsDto.setCommodityId(commodityId);
-        goodsDto.setSpecificationId(specificationId);
-        goodsDto.setCommodityName(commodityName);
-        goodsDto.setSpecificationName(specificationName);
-        goodsDto.setPrice(price);
-        goodsDto.setAmount(goodsDtoAmount);
-        goodsDto.setImgUrl(imgUrl);
-        return goodsDto;
-    }
 }

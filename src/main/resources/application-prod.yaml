@@ -1,23 +1,23 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.3.32:3306/bicycle?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
+    url: jdbc:mysql://127.0.0.1:3306/bicycle?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
     username: root
     password: 123456
   jackson:
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
   jpa:
-    show-sql: true
+    show-sql: false
   redis:
-    host: 192.168.3.32
+    host: 127.0.0.1
   data:
     redis:
       repositories:
         enabled: false
 kindless:
-  enable-swagger: true
-  token-expired-in: 1800
+  enable-swagger: false
+  token-expired-in: 86400
 server:
   port: 8090
 logging:
