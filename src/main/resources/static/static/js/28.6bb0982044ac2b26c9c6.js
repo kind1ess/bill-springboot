@@ -1,0 +1,2 @@
+webpackJsonp([28],{itvF:function(e,t){},kihF:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var r={components:{commonShortagePreview:n("VWPp").a}},o={render:function(){var e=this.$createElement;return(this._self._c||e)("commonShortagePreview",{attrs:{statusId:11}})},staticRenderFns:[]};var i=n("C7Lr")(r,o,!1,function(e){n("itvF")},null,null);t.default=i.exports}});
+//# sourceMappingURL=28.6bb0982044ac2b26c9c6.js.map

@@ -1,0 +1,2 @@
+webpackJsonp([24],{PXOu:function(e,r){},"mVS+":function(e,r,t){"use strict";Object.defineProperty(r,"__esModule",{value:!0});var n={components:{commonOrderPreview:t("Iz8z").a}},o={render:function(){var e=this.$createElement;return(this._self._c||e)("commonOrderPreview",{attrs:{statusId:1,showVerify:!0}})},staticRenderFns:[]};var s=t("C7Lr")(n,o,!1,function(e){t("PXOu")},null,null);r.default=s.exports}});
+//# sourceMappingURL=24.b31fa2438d91f0b07128.js.map
